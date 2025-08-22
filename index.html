@@ -47,6 +47,7 @@
   .brand-logo{width:100px;height:100px}
   .brand-pill{background:#d7d8da;padding:.35rem .8rem;border-radius:999px;font-weight:800}
   .brand-pill b{color:#111}
+   
 
     /* hero */
   .hero{background:#d7d8da;border-radius:var(--r-xl);padding:26px 24px 28px;box-shadow:var(--shadow);position:relative;margin:10px 0 18px}
@@ -346,6 +347,67 @@
         animation: wave 3s ease-in-out infinite; /* Keep the animation */
       }
     }
+    /* general animation helpers */
+.icon { will-change: transform, filter; transform-origin: center bottom; }
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .icon, .tri .card:hover .icon { animation: none !important; transform: none !important; }
+}
+
+/* ── Icon 1 (soot sprite): gentle float + occasional hop */
+.icon1.in-view { animation: floatY 1.2s ease-in-out infinite; }
+.tri .card:hover .icon1 { animation: hop 700ms ease-in-out; }
+
+@keyframes floatY {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-8px); }
+}
+@keyframes hop {
+  0%   { transform: translateY(0) scale(1); }
+  30%  { transform: translateY(-14px) scale(1.03); }
+  60%  { transform: translateY(0) scale(1); }
+  80%  { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+/* ── Icon 2 (cat + laptop): idle “type & glow”; on hover a tiny shake */
+.icon2.in-view { animation: typeGlow 1.6s ease-in-out infinite; filter: drop-shadow(0 2px 0 rgba(0,0,0,.05)); }
+.tri .card:hover .icon2 { animation: shakeX 500ms ease-in-out; }
+
+@keyframes typeGlow {
+  0%, 100% { transform: rotate(-1deg) translateY(0); filter: drop-shadow(0 0 0 rgba(255,255,255,0)); }
+  20%      { transform: rotate(0deg)  translateY(-2px); filter: drop-shadow(0 0 10px rgba(255,255,200,.55)); }
+  40%      { transform: rotate(1deg)  translateY(0); }
+  60%      { transform: rotate(0deg)  translateY(-1px); filter: drop-shadow(0 0 8px rgba(255,255,200,.45)); }
+  80%      { transform: rotate(-1deg) translateY(0); }
+}
+@keyframes shakeX {
+  0%,100% { transform: translateX(0); }
+  20%     { transform: translateX(-2px); }
+  40%     { transform: translateX(2px); }
+  60%     { transform: translateX(-1px); }
+  80%     { transform: translateX(1px); }
+}
+
+/* ── Icon 3 (cat + book stack): gentle book wobble + tail wag vibe */
+.icon3.in-view { animation: wobble 1s ease-in-out infinite; }
+.tri .card:hover .icon3 { animation: wag 900ms ease-in-out; }
+
+@keyframes wobble {
+  0%,100% { transform: rotate(0deg) translateY(0); }
+  25%     { transform: rotate(-2deg) translateY(-2px); }
+  50%     { transform: rotate(0.8deg) translateY(0); }
+  75%     { transform: rotate(-1deg) translateY(-1px); }
+}
+@keyframes wag {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(3deg); }
+  50%  { transform: rotate(-3deg); }
+  75%  { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
+}
+
   </style>
 </head>
 <body>
@@ -370,17 +432,17 @@
       <div class="card">
         <h3>Big Chapters scaring you?</h3>
         <p>Upload your chapters and we'll make them manageable</p>
-        <img class="icon" src="./resources/icon1.png" alt="icon1">
+        <img class="icon icon1" src="./resources/icon1.png" alt="icon1">
       </div>
       <div class="card">
         <h3>Tired of endless reading?</h3>
         <p>Watch them instead with our video summaries</p>
-        <img class="icon" style="width: 150px;height: 150px;bottom:-40px;left: -15px;" src="./resources/icon2.png" alt="icon2">
+        <img class="icon icon2" style="width: 150px;height: 150px;bottom:-40px;left: -15px;" src="./resources/icon2.png" alt="icon2">
       </div>
       <div class="card">
         <h3>Exam's tomorrow?</h3>
         <p>Relax and grasp key concepts quickly</p>
-        <img class="icon" style="width: 150px;height: 150px;bottom:-50px;left: -35px;"src="./resources/icon3.png" alt="icon3">
+        <img class="icon icon3" style="width: 150px;height: 150px;bottom:-50px;left: -35px;"src="./resources/icon3.png" alt="icon3">
       </div>
     </section>
 
@@ -543,6 +605,17 @@
         processBtn.disabled = false;
       }
     }
+    // Trigger animations only when icons are visible
+  const icons = document.querySelectorAll('.tri .icon');
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('in-view');
+      else e.target.classList.remove('in-view');
+    });
+  }, { threshold: 0.3 });
+
+  icons.forEach(i => io.observe(i));
   </script>
 </body>
 </html>
