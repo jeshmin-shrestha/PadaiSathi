@@ -36,7 +36,19 @@ GENZ_INTROS = [
     "It's giving educational vibes...",
     "Let's get this bread and learn about..."
 ]
-
+# Add this list of Gen-Z style outros
+GENZ_OUTROS = [
+    "And that's the tea! Stay slaying, study kings and queens!",
+    "No cap, you just leveled up your knowledge!",
+    "That's a major W for your brain cells!",
+    "You just got that rizz with knowledge! Go flex on your exams!",
+    "Bet you're feeling main character energy after learning that!",
+    "That's it, that's the lesson! Go crush it!",
+    "You're now officially that girl (or guy) who knows their stuff!",
+    "Knowledge acquired! Time to touch grass and flex!",
+    "You just got that academic glow up! Period!",
+    "And that's on periodt! Go ace that test!"
+]
 def extract_text(file: UploadFile):
     ext = file.filename.split(".")[-1].lower()
     if ext == "pdf":
@@ -79,8 +91,10 @@ async def generate_video(file: UploadFile = File(...)):
         summary = summarizer(text, max_length=500, min_length=100, do_sample=False)[0]['summary_text']
 
         # Add Gen-Z intro
+         # Add Gen-Z intro AND outro
         genz_intro = random.choice(GENZ_INTROS)
-        full_text = f"{genz_intro} {summary}"
+        genz_outro = random.choice(GENZ_OUTROS)
+        full_text = f"{genz_intro} {summary} {genz_outro}"
 
         # Create TTS audio
         audio_path = f"static/{uuid.uuid4()}.mp3"
