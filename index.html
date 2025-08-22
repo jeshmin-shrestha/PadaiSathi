@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Padasathi - Text Summarizer & Video Generator</title>
+  <style>
+    :root{
+      --bg: #f0f2f5;
+      --panel: #ffffff;
+      --panel-dark: #e6e8ec;
+      --pill: #f8f9fa;
+      --ink: #1a1d21;
+      --muted: #5f6368;
+      --primary: #4285f4;
+      --primary-light: #e8f0fe;
+      --shadow: 0 4px 12px rgba(0,0,0,0.08);
+      --r-xl: 24px; 
+      --r-lg: 20px; 
+      --r-md: 16px;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: var(--bg); 
+      color: var(--ink); 
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      padding: 0;
+    }
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+      /* brand row */
+  .brand-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .brand-logo{width:100px;height:100px}
+  .brand-pill{background:#d7d8da;padding:.35rem .8rem;border-radius:999px;font-weight:800}
+  .brand-pill b{color:#111}
+
+    /* hero */
+  .hero{background:#d7d8da;border-radius:var(--r-xl);padding:26px 24px 28px;box-shadow:var(--shadow);position:relative;margin:10px 0 18px}
+  .hero h1{font-size:22px;font-weight:900;margin-bottom:8px}
+  .hero p{font-weight:700}
+  .hero .hero-mascot{position:absolute;right:18px;bottom:-26px;width:120px;pointer-events:none}
+
+    /* THREE MINI CARDS */
+    .tri {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin: 14 0 22px;
+      margin-top: 50px;
+    }
+    .tri .card {
+      background: #d7d8da;
+      border-radius: var(--r-md);
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+    .tri .card:hover {
+      transform: translateY(-4px);
+    }
+    .tri h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      margin-left: 100px;
+      color: var(--ink);
+    }
+    .tri p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-left: 100px;
+    }
+    .tri .icon {
+     position:absolute;left:-12px;bottom:-10px;width:86px
+    }
+
+    /* WAVE DIVIDER */
+    .wave {
+      margin: 24px 0;
+      background: #d7d8da;
+    }
+    .wave svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* BIG SECTION CARDS */
+    .section {
+      background: #d7d8da;
+      border-radius: var(--r-xl);
+      padding: 28px 24px;
+      box-shadow: var(--shadow);
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .section h2 {
+     font-size:18px;font-weight:900;margin-bottom:16px
+    }
+    .section h2 i {
+      font-size: 1.2rem;
+    }
+
+    /* Upload area */
+    .upload-container {
+      background: var(--pill);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 2px dashed #dadce0;
+      transition: all 0.2s ease;
+    }
+    .upload-container:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    #dropZone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      padding: 20px;
+    }
+    .upload-icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+    .upload-text {
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .file-types {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .file-input {
+      display: none;
+    }
+    .file-info {
+      text-align: center;
+      margin: 12px 0;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    /* Buttons */
+    .btn {
+      background: #2f2f33;
+      color: white;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 28px;
+      font-weight: 600;
+      display: block;
+      margin: 16px auto 0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      max-width: 300px;
+      font-size: 1rem;
+    }
+    .btn:hover {
+      background: black;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .btn:disabled {
+      background: #9aa0a6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Summary content */
+    .summary-box {
+      background: var(--pill);
+      border-radius: 16px;
+      padding: 20px;
+      min-height: 180px;
+      border-left: 4px solid var(--muted);
+    }
+
+    /* Video box */
+    .video-box {
+      background: var(--pill);
+      border-radius: 16px;
+      padding: 20px;
+      min-height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    video {
+      width: 100%;
+      max-width: 560px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Status messages */
+    .status {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin: 16px 0;
+      text-align: center;
+      font-weight: 500;
+    }
+    .status-processing {
+      background: rgba(66, 133, 244, 0.1);
+      color: var(--primary);
+    }
+    .status-success {
+      background: rgba(52, 168, 83, 0.1);
+      color: #0d652d;
+    }
+    .status-error {
+      background: rgba(234, 67, 53, 0.1);
+      color: #c5221f;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* Mascots */
+    .mascot {
+      position: absolute;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .mascot.upload {
+      right: -50px;
+      bottom: -30px;
+      width: 200px;
+    }
+    .mascot.summary {
+      left: -150px;
+      bottom: -90px;
+      width: 300px;
+    }
+    .mascot.video {
+      right: -90px;
+      bottom: -100px;
+      width: 200px;
+    }
+    .hero-mascot {
+            position: absolute;
+            top: 2px;
+            right: 60px;
+            width: 200px;
+            height: 200px;
+            animation: wave 3s ease-in-out infinite;
+        }
+
+        /* Waving animation */
+        @keyframes wave {
+            0% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(10px) rotate(5deg); }
+            50% { transform: translateX(0) rotate(0deg); }
+            75% { transform: translateX(-10px) rotate(-5deg); }
+            100% { transform: translateX(0) rotate(0deg); }
+        }
+    /* Responsive */
+    @media (max-width: 900px) {
+      .tri {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        
+      }
+      .hero h1, .hero p {
+        max-width: 100%;
+      }
+      .hero .hero-mascot {
+        display: block; /* Ensure it is visible */
+        top: 15px; /* Keep it aligned at the top */
+        right: 10px; /* Adjust the position slightly for smaller screens */
+        width: 150px; /* Keep it visible but reduce size for mobile */
+        height: 200px; /* Same as width to maintain aspect ratio */
+        animation: wave 3s ease-in-out infinite; /* Keep the animation */
+      }
+      .mascot {
+        
+        display: none;
+        
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 16px 12px 32px;
+      }
+      .hero {
+        padding: 24px 20px;
+      }
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+      .section {
+        padding: 24px 20px;
+      }
+      .upload-container {
+        padding: 20px 16px;
+      }
+       .hero .hero-mascot {
+        display: block; /* Ensure it is visible */
+        top: 15px; /* Keep it aligned at the top */
+        right: -10px; /* Adjust the position slightly for smaller screens */
+        width: 90px; /* Keep it visible but reduce size for mobile */
+        height: 150px; /* Same as width to maintain aspect ratio */
+        animation: wave 3s ease-in-out infinite; /* Keep the animation */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Brand -->
+      
+  <div class="brand-row">
+    <img src="./resources/reading-cat.png" class="brand-logo" alt="logo"/>
+    <div class="brand-pill">Padai<b>Sathi</b></div>
+  </div>
+
+    <!-- Hero panel -->
+    <section class="hero">
+      <h1>Study Less, Understand More</h1>
+      <p>Upload, Summarize &amp; Learn</p>
+      <img src="./resources/totoro.png" alt="" class="hero-mascot">
+    </section>
+
+    <!-- Three mini-cards -->
+    <section class="tri">
+      <div class="card">
+        <h3>Big Chapters scaring you?</h3>
+        <p>Upload your chapters and we'll make them manageable</p>
+        <img class="icon" src="./resources/icon1.png" alt="icon1">
+      </div>
+      <div class="card">
+        <h3>Tired of endless reading?</h3>
+        <p>Watch them instead with our video summaries</p>
+        <img class="icon" style="width: 150px;height: 150px;bottom:-40px;left: -15px;" src="./resources/icon2.png" alt="icon2">
+      </div>
+      <div class="card">
+        <h3>Exam's tomorrow?</h3>
+        <p>Relax and grasp key concepts quickly</p>
+        <img class="icon" style="width: 150px;height: 150px;bottom:-50px;left: -35px;"src="./resources/icon3.png" alt="icon3">
+      </div>
+    </section>
+
+    <!-- Wave divider -->
+    <div class="wave">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+        <path fill="#ffffff" d="M0,70 C240,40 480,100 720,90 C960,80 1200,40 1440,60 L1440,120 L0,120Z"/>
+      </svg>
+    </div>
+
+    <!-- Upload Section -->
+    <section class="section">
+      <h2><i class="fas fa-file-upload"></i> Upload Documents</h2>
+      <div class="upload-container">
+        <div class="upload-area" id="dropZone">
+          <div class="upload-icon">📄</div>
+          <p class="upload-text">Click to select a file or drag and drop here</p>
+          <p class="file-types">Supports PDF, TXT, and DOCX files</p>
+        </div>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,.txt,.docx" class="file-input" />
+      <div class="file-info" id="fileInfo">No file selected</div>
+      <button id="processBtn" class="btn" onclick="processFile()" disabled>
+        Summarize &amp; Generate Video
+      </button>
+      <img src="./resources/icon4.png" alt="mascot" class="mascot upload">
+    </section>
+
+    <!-- Summary Section -->
+    <section class="section">
+      <h2><i class="fas fa-file-alt"></i> Summary</h2>
+      <div class="summary-box" id="summary">
+        Your document summary will appear here after processing.
+      </div>
+      <img src="./resources/icon5.png" alt="" class="mascot summary">
+    </section>
+
+    <!-- Video Section -->
+    <section class="section">
+      <h2><i class="fas fa-video"></i> Generated Video</h2>
+      <div id="videoStatus"></div>
+      <div class="video-box">
+        <video id="videoPlayer" controls style="display:none;"></video>
+      </div>
+      <img src="./resources/icon6.png" alt="" class="mascot video">
+    </section>
+
+    <footer>© 2025 Padasathi - Study Less, Understand More</footer>
+  </div>
+
+  <script>
+    const backendUrl = "http://127.0.0.1:8000";
+    const fileInput = document.getElementById("fileInput");
+    const dropZone = document.getElementById("dropZone");
+    const fileInfo = document.getElementById("fileInfo");
+    const processBtn = document.getElementById("processBtn");
+    const summaryEl = document.getElementById("summary");
+    const videoPlayer = document.getElementById("videoPlayer");
+    const videoStatus = document.getElementById("videoStatus");
+
+    // Make drop zone clickable
+    dropZone.addEventListener("click", () => {
+      fileInput.click();
+    });
+
+    // Handle file selection
+    fileInput.addEventListener("change", (e) => {
+      if (e.target.files.length) {
+        const file = e.target.files[0];
+        fileInfo.textContent = `Selected file: ${file.name} (${formatFileSize(file.size)})`;
+        processBtn.disabled = false;
+      }
+    });
+
+    // Drag and drop functionality
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.style.backgroundColor = "rgba(66, 133, 244, 0.1)";
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.style.backgroundColor = "";
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.style.backgroundColor = "";
+      
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        const file = e.dataTransfer.files[0];
+        fileInfo.textContent = `Selected file: ${file.name} (${formatFileSize(file.size)})`;
+        processBtn.disabled = false;
+      }
+    });
+
+    // Format file size to human readable format
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    async function processFile() {
+      if (!fileInput.files.length) {
+        alert("Please select a file first");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      // Update UI to show processing state
+      processBtn.innerHTML = '<span class="loading"></span> Processing...';
+      processBtn.disabled = true;
+      summaryEl.innerHTML = 'Generating summary...';
+      videoStatus.innerHTML = '';
+      videoPlayer.style.display = 'none';
+
+      try {
+        // First, get the summary
+        const summaryRes = await fetch(`${backendUrl}/summarize`, {
+          method: "POST",
+          body: formData
+        });
+
+        const summaryData = await summaryRes.json();
+        if (!summaryRes.ok) throw new Error(summaryData.error || "Error summarizing file");
+
+        summaryEl.textContent = summaryData.summary;
+
+        // Show loading for video
+        videoStatus.innerHTML = '<div class="status status-processing">Generating video... This may take a few minutes.</div>';
+
+        // Then, generate video
+        const videoRes = await fetch(`${backendUrl}/generate-video`, {
+          method: "POST",
+          body: formData
+        });
+
+        const videoData = await videoRes.json();
+        if (!videoRes.ok) throw new Error(videoData.error || "Error generating video");
+
+        videoPlayer.src = `${backendUrl}${videoData.videoUrl}`;
+        videoPlayer.style.display = "block";
+        videoPlayer.load();
+
+        videoStatus.innerHTML = '<div class="status status-success">Video generated successfully!</div>';
+
+      } catch (err) {
+        summaryEl.textContent = "Error generating summary. Please try again.";
+        videoStatus.innerHTML = '<div class="status status-error">Error generating video. Please try again.</div>';
+        console.error("Error:", err);
+        alert("Error: " + err.message);
+      } finally {
+        // Reset button state
+        processBtn.innerHTML = 'Summarize & Generate Video';
+        processBtn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
